@@ -30,7 +30,7 @@ class fotosModel{
                 $fk =$statement->fetch(PDO::FETCH_OBJ);
 
                 
-                $res =  array(
+                array_push($res,array(
                     'id' =>  $dato->ID ,
                     'nombre' =>  $dato->NOMBRE,
                     'tipo' =>  $dato->TIPO,
@@ -43,17 +43,12 @@ class fotosModel{
                       'nombres' =>  $fk->NOMBRES,
                       'apellidos' =>  $fk->APELLIDOS,
                       'descripcion' =>  $fk->DESCRIPCION 
-                    )
+                    ))
                         );
-
-
-
             }
       
-
             return $res;
        
-           
         }
         catch (PDOException $e)
         {
