@@ -43,43 +43,28 @@ class ControllerFotos{
 
     public function delete(){
         
-        require_once  ("./Models/conductorModel.php");
+        require_once  ("./Models/fotosModel.php");
 
-        $model = new conductorModel();  
+        $model = new fotosModel(); 
         
         header('Content-type:application/json;charset=utf-8');
         return json_encode([
-            'mensaje' => "Registro eliminado correctamente",
-            'Conductor eliminado' => $model->delete()
+            $model->delete()
         ]);
      
     }
 
 
     public function update(){
-
-        $json["id_conductor"] =  $_POST['id'];
-        $json["cedula"] =  $_POST['cedula'];
-        $json["nombres"] = $_POST['nombres'];
-        $json["apellidos"] = $_POST['apellidos'];
-        $json["fecha_contratacion"] = $_POST['fecha_contratacion'];
-        $json["fecha_terminacion"] = $_POST['fecha_terminacion'];
-        $json["bono_extras"] = $_POST['bono_extras'];
-        $json["email"] =  $_POST['email'];
-
-        $json["fecha"] = $_POST['fecha'];
       
     
-        require_once  ("./Models/conductorModel.php");
+        require_once  ("./Models/fotosModel.php");
 
-        $model = new conductorModel();  
-        
-        $json["carro"] = $model->update();
+        $model = new fotosModel(); 
         
         header('Content-type:application/json;charset=utf-8');
         return json_encode([
-            'mensaje' => "Registro actualizado correctamente",
-            'Carro actualizado' => $json
+            $model->update()
         ]);
      
     }
