@@ -20,14 +20,23 @@ class ControllerFotos{
     #crea un nuevo cliente
     public function create(){
 
-    
+        $json["nombre"] =  $_POST['nombre'];
+        $json["tipo"] = $_POST['tipo'];
+        $json["tamaño"] = $_POST['tamaño'];
+        $json["descripcion"] = $_POST['descripcion'];
+        $json["fecha_creacion"] = $_POST['fecha_creacion'];
+        $json["fecha_modificacion"] = $_POST['fecha_modificacion'];
+        $json["email"] =  $_POST['email']; 
+
         require_once  ("./Models/fotosModel.php");
 
-        $model = new fotosModel();  
+        $model = new fotosModel(); 
+        
+        $json["autores"] = $model->create();
 
         header('Content-type:application/json;charset=utf-8');
-        echo json_encode([
-            $model->create()
+        return json_encode([
+            $json
         ]);
 
     }

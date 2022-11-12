@@ -81,39 +81,15 @@ class fotosModel{
             ]);
 
         
-            $postId = $db->getConnection()->lastInsertId();
-
-            var_dump($postId);
-
-            //buscamos los campos del registro insertado
-            $sql = $db->getConnection()->prepare("SELECT * FROM $this->table where ID= ?");
-            $sql->execute([$postId]);
-            $dato = $sql->fetch(PDO::FETCH_OBJ);
-
-            var_dump($dato);
-
             //busca el los datos del fk 
             $sql1 = $db->getConnection()->prepare("SELECT * FROM autores where id= ?");
-            $sql1->execute([$dato->FK_AUTORES]);
+            $sql1->execute([
+                $_POST['fk_autores']
+            ]);
 
             $fk =$sql1->fetch(PDO::FETCH_OBJ);
 
-            $res =  array(
-                'id' =>  $dato->ID ,
-                'nombre' =>  $dato->NOMBRE,
-                'tipo' =>  $dato->TIPO,
-                'email' =>  $dato->EMAIL, 
-                'tamaño' =>  $dato->TAMAÑO,
-                'fecha_creacion' =>  $dato->FECHA_CREACION,
-                'fecha_modificacion' =>  $dato->FECHA_MODIFICACION, 
-                "data_fk"=> array(
-                    'id' =>  $fk->ID ,
-                    'nombres' =>  $fk->NOMBRES,
-                    'apellidos' =>  $fk->APELLIDOS,
-                    'descripcion' =>  $fk->DESCRIPCION 
-                )        );
-
-                return $res;
+            return $fk;
         }catch(PDOException $e){
             header('Content-type:application/json;charset=utf-8');
             echo json_encode([
