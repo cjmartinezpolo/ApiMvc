@@ -70,15 +70,14 @@ class ControllerFotos{
     }
 
     
-    public function conductor(){
+    public function fotosId(){
 
-        require_once  ("./Models/conductorModel.php");
+        require_once  ("./Models/fotosModel.php");
 
-        $model = new conductorModel();  
-
-
+        $model = new fotosModel(); 
+        
         header('Content-type:application/json;charset=utf-8');
-        return json_encode($model->conductor());
+        return json_encode($model->fotosId());
      
     }
 

@@ -224,7 +224,8 @@ class fotosModel
                             'nombres' =>  $fk->NOMBRES,
                             'apellidos' =>  $fk->APELLIDOS,
                             'descripcion' =>  $fk->DESCRIPCION
-                        ) )
+                        )
+                    )
 
                 );
 
@@ -242,32 +243,55 @@ class fotosModel
     }
 
     //Obtiene un registro por Id
-    public function conductor()
+    public function fotosId()
     {
 
         $db = new DATABASE();
         try {
-            $stm = $db->getConnection()->prepare("SELECT * FROM $this->table WHERE id_conductor= ?");
 
-            $stm->execute([
-                $_POST['id']
-            ]);
+            //verificar si existe el usuario
+            $sql = $db->getConnection()->prepare("SELECT * FROM $this->table where id= ?");
+            $sql->execute([$_GET['id']]);
+            $result = $sql->rowCount();
 
-            $resultado = $stm->fetch(PDO::FETCH_ASSOC);
+            if ($result <= 0) {
+                $res = array("ID " . $_GET['id'] => "no exite este registro");
 
-            $statement = $db->getConnection()->prepare("SELECT * from carro WHERE id_carro = ?");
+                return $res;
+            } else {
 
+                //Mostrar lista de post
+                $sql = $db->getConnection()->prepare("SELECT * FROM $this->table WHERE ID = ?");
+                $sql->execute([$_GET['id']]);
 
-            $id_vehiculo = $resultado['id_vehiculo'];
-            $statement->execute([
-                $id_vehiculo
-            ]);
+                $dato = $sql->fetch(PDO::FETCH_OBJ);
 
-            $resultado2 = $statement->fetch(PDO::FETCH_ASSOC);
-            $resultado['Carro asignado'] = $resultado2;
+                //busca el los datos del fk 
+                $sql1 = $db->getConnection()->prepare("SELECT * FROM autores where id= ?");
+                $sql1->execute([$dato->FK_AUTORES]);
 
+                $fk = $sql1->fetch(PDO::FETCH_OBJ);
 
-            return $resultado;
+                $res =  array(
+                    'id' =>  $dato->ID,
+                    'nombre' =>  $dato->NOMBRE,
+                    'tipo' =>  $dato->TIPO,
+                    'email' =>  $dato->EMAIL,
+                    'descripcion' =>  $dato->DESCRIPCION,
+                    'tamaño' =>  $dato->TAMAÑO,
+                    'fecha_creacion' =>  $dato->FECHA_CREACION,
+                    'fecha_modificacion' =>  $dato->FECHA_MODIFICACION,
+                    "data_fk" => array(
+                        'id' =>  $fk->ID,
+                        'nombres' =>  $fk->NOMBRES,
+                        'apellidos' =>  $fk->APELLIDOS,
+                        'descripcion' =>  $fk->DESCRIPCION
+                    )
+                );
+
+                header("HTTP/1.1 200 OK");
+                echo json_encode($res);
+            }
         } catch (PDOException $e) {
             die($e->getMessage());
         }
