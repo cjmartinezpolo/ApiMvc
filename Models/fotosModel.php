@@ -22,29 +22,29 @@ class fotosModel{
 
             foreach ($stm->fetchAll(PDO::FETCH_OBJ) as $key => $dato) {
 
-                $statement=$db->getConnection()->prepare("SELECT * from carro WHERE id_carro = ?");
+                $statement=$db->getConnection()->prepare("SELECT * from autores WHERE id = ?");
                 $statement->execute([
-                    $dato->id_vehiculo
+                    $dato->FK_AUTORES
                 ]);
 
                 $fk =$statement->fetch(PDO::FETCH_OBJ);
 
                 
-                array_push($res,array(
-                    'id_conductor' =>  $dato->id_conductor ,
-                    'cedula' =>  $dato->cedula,
-                    'nombres' =>  $dato->nombres,
-                    'apellidos' =>  $dato->apellidos, 
-                    'fecha_contratacion' =>  $dato->fecha_contratacion,
-                    'fecha_terminacion' =>  $dato->fecha_terminacion,
-                    'fecha' =>  $dato->FECHA, 
+                $res =  array(
+                    'id' =>  $dato->ID ,
+                    'nombre' =>  $dato->NOMBRE,
+                    'tipo' =>  $dato->TIPO,
+                    'email' =>  $dato->EMAIL, 
+                    'tamaño' =>  $dato->TAMAÑO,
+                    'fecha_creacion' =>  $dato->FECHA_CREACION,
+                    'fecha_modificacion' =>  $dato->FECHA_MODIFICACION, 
                     "data_fk"=> array(
-                    'id_carro' =>  $fk->id_carro ,
-                    'placa' =>  $fk->placa,
-                    'marca' =>  $fk->marca,
-                    'cant_pasajeros' =>  $fk->cant_pasajeros 
-                    ))
-                );
+                      'id' =>  $fk->ID ,
+                      'nombres' =>  $fk->NOMBRES,
+                      'apellidos' =>  $fk->APELLIDOS,
+                      'descripcion' =>  $fk->DESCRIPCION 
+                    )
+                        );
 
 
 
@@ -69,32 +69,56 @@ class fotosModel{
 
         try{
 
-            $stm= $db->getConnection()->prepare("INSERT INTO $this->table (cedula, nombres, apellidos, fecha_contratacion, fecha_terminacion, bono_extras, email,fecha, id_vehiculo) VALUES (?,?,?,?,?,?,?,?,?)");
+            $stm= $db->getConnection()->prepare("INSERT INTO $this->table (NOMBRE,TIPO,TAMAÑO,DESCRIPCION,FECHA_CREACION,FECHA_MODIFICACION,EMAIL,FK_AUTORES) VALUES (?,?,?,?,?,?,?,?)");
             
             $stm->execute([
-                $_POST['cedula'],
-                $_POST['nombres'],
-                $_POST['apellidos'],
+                $_POST['nombre'],
+                $_POST['tipo'],
+                $_POST['tamaño'],
+                $_POST['descripcion'],
 
-                $_POST['fecha_contratacion'],
-                $_POST['fecha_terminacion'],
-                $_POST['bono_extras'],
-
+                $_POST['fecha_creacion'],
+                $_POST['fecha_modificacion'],
                 $_POST['email'],
-                
-                $_POST['fecha'],
-                $_POST['id_vehiculo']
+
+                $_POST['fk_autores']
+    
             ]);
 
-            
-            $statement = $db->getConnection()->prepare("SELECT * from carro WHERE id_carro = ?");
-            $statement->execute([
-                $_POST['id_vehiculo']
-            ]);
+        
+            $postId = $db->getConnection()->lastInsertId();
 
-            $resultado = $statement->fetchAll(PDO::FETCH_ASSOC);
+            var_dump($postId);
 
-            return $resultado;
+            //buscamos los campos del registro insertado
+            $sql = $db->getConnection()->prepare("SELECT * FROM $this->table where ID= ?");
+            $sql->execute([$postId]);
+            $dato = $sql->fetch(PDO::FETCH_OBJ);
+
+            var_dump($dato);
+
+            //busca el los datos del fk 
+            $sql1 = $db->getConnection()->prepare("SELECT * FROM autores where id= ?");
+            $sql1->execute([$dato->FK_AUTORES]);
+
+            $fk =$sql1->fetch(PDO::FETCH_OBJ);
+
+            $res =  array(
+                'id' =>  $dato->ID ,
+                'nombre' =>  $dato->NOMBRE,
+                'tipo' =>  $dato->TIPO,
+                'email' =>  $dato->EMAIL, 
+                'tamaño' =>  $dato->TAMAÑO,
+                'fecha_creacion' =>  $dato->FECHA_CREACION,
+                'fecha_modificacion' =>  $dato->FECHA_MODIFICACION, 
+                "data_fk"=> array(
+                    'id' =>  $fk->ID ,
+                    'nombres' =>  $fk->NOMBRES,
+                    'apellidos' =>  $fk->APELLIDOS,
+                    'descripcion' =>  $fk->DESCRIPCION 
+                )        );
+
+                return $res;
         }catch(PDOException $e){
             header('Content-type:application/json;charset=utf-8');
             echo json_encode([
